@@ -1,7 +1,19 @@
-# **김찬준 포트폴리오**
+---
+title:  "Chanjun's Dairy"
+excerpt: "데이터 분석가 김찬준의 일기장입니다."
+
+categories:
+  - 포트폴리오
+tags:
+  - 포트폴리오
+last_modified_at: 2021-05-17T08:06:00-05:00
+---
+
+
+# 
 
 ## **Info**
-- Contach : 010 8947 3803
+- Contact : 010 8947 3803
 - Mail : nice3803@naver.com
 
 --- 
