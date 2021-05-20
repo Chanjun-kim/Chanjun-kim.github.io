@@ -9,21 +9,21 @@ title: "Chanjun's 포트폴리오"
 --- 
 * Skill
     * Python : *<u>상</u>*
-        > pandas와 geopandas 등을 통한 정형/공간 데이터 전처리 및 EDA
-        > tensorflow, sklearn, xgboost 등을 활용한 머신러닝/딥러닝 모델링
-        > 셀레니움 등을 활용한 데이터 크롤링
-        > flask 등을 활용한 모델링 API화
-        > 오픈 API 활용한 데이터 가공
+        > pandas와 geopandas 등을 통한 정형/공간 데이터 전처리 및 EDA<br/>
+        > tensorflow, sklearn, xgboost 등을 활용한 머신러닝/딥러닝 모델링<br/>
+        > 셀레니움 등을 활용한 데이터 크롤링<br/>
+        > flask 등을 활용한 모델링 API화<br/>
+        > 오픈 API 활용한 데이터 가공<br/>
     * R : *<u>상</u>*
-        > data table, sf 정형/공간 데이터 전처리 및 EDA
-        > ggplot, leaflet 등을 활용한 시각화
-        > 통계/머신러닝 모델링
+        > data table, sf 정형/공간 데이터 전처리 및 EDA<br/>
+        > ggplot, leaflet 등을 활용한 시각화<br/>
+        > 통계/머신러닝 모델링<br/>
     * SQL : *<u>상</u>*
-        > HIVE, IMPALA 등 RDBMS에서 빅데이터 데이터 전처리
+        > HIVE, IMPALA 등 RDBMS에서 빅데이터 데이터 전처리<br/>
     * Java : *<u>중</u>*
-        > 스프링을 활용한 웹 프로그래밍
+        > 스프링을 활용한 웹 프로그래밍<br/>
     * Java Script : *<u>중</u>*
-        > JQuery 등을 활용한 기초 문법 및 활용 가능
+        > JQuery 등을 활용한 기초 문법 및 활용 가능<br/>
 
 ---
 
