@@ -4,9 +4,15 @@ title: "About Me"
 ---
 <br/>
 - Name : 김찬준
+
+---
+
 - Age/Gender : 1992.05.03 / 남
+<br/>
 - Major : 한양대학교 ERICA 산업경영공학 전공
+<br/>
 - Phone : 010-8947-3803
+<br/>
 - Mail : nice3803@naver.com
 
 
