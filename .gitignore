@@ -4,3 +4,14 @@ Gemfile.lock
 .sass-cache
 .jekyll-metadata
 .DS_Store
+
+*.secret
+_posts/key/*
+_posts/key/
+_posts_/key
+docs/_posts_/key/*
+docs/_posts_/key/
+docs/_posts_/key
+*.ipynb
+_ipynb/*
+_ipynb/
