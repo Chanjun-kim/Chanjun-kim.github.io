@@ -8,7 +8,10 @@ Gemfile.lock
 *.secret
 _posts/key/*
 _posts/key/
-_posts_/key
+_posts/key
 docs/_posts_/key/*
 docs/_posts_/key/
 docs/_posts_/key
+_ipynb/key/*
+_ipynb/key/
+_ipynb/key
