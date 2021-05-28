@@ -11,7 +11,7 @@
 #   sort_reverse: true
 
 # jekyll-paginate configuration
-paginate:            10
+paginate:            5
 
 # Build settings
 markdown:            kramdown
@@ -20,9 +20,9 @@ permalink:           none
 plugins:             [jekyll-paginate, jekyll-sitemap, jekyll-feed, jekyll-seo-tag]
 
 # Customise atom feed settings (this is where Jekyll-Feed gets configuration information)
-title:		           'Diary of Chanjun'
-description:	       '데이터 분석가의 다이어리'
-author:              'Chanjun Kim'
+title:		           'Your Site Name'
+description:	       'with a cool subheading'
+author:              'You!'
 
 # RSS 2.0 can be used instead of Atom by uncommenting following two lines
 #feed:
