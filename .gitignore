@@ -19,3 +19,8 @@ _ipynb/key
 _posts/*files
 _posts/*files/
 _posts/*files/*
+
+_ipynb/data/dacon/*
+_ipynb/data/dacon/
+_ipynb/data/dacon
+_ipynb/data/dacon/*.csv
