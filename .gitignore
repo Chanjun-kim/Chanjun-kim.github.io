@@ -28,3 +28,7 @@ _ipynb/data/dacon/*.csv
 _ipynb/data/kfood/*
 _ipynb/data/kfood/
 _ipynb/data/kfood
+
+_ipynb/data/model
+_ipynb/data/model/*
+_ipynb/data/model/
