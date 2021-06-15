@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "시계열 데이터를 다뤄보자"
+title: "시계열 데이터 - ARIMA"
 author: "Chanjun Kim"
 categories: Data분석
 tags: [Data, TimeSeries, ARIMA, LSTM, BOOSTING, REGRESSION, 시계열데이터, 시계열분석]
