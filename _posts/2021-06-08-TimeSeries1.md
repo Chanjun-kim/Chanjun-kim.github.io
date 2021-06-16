@@ -689,6 +689,8 @@ plt.show()
 ![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_34_0.png)
 
 
+![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_34_0.png)
+
 
 ```python
 print_adfuller(decompose_df)
@@ -726,8 +728,10 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_39_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_40_0.png)
 
+
+![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_39_0.png)
 
 
 ```python
@@ -922,8 +926,10 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_45_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_47_0.png)
 
+
+![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_45_0.png)
 
 
 ```python
@@ -1142,15 +1148,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_27_0.png) <br>
@@ -1172,15 +1178,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_29_0.png) <br>
@@ -1202,15 +1208,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_61_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_61_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_61_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_31_0.png) <br>
@@ -1342,7 +1348,7 @@ sns.heatmap(arima_metric.iloc[:, 1:].corr(), annot = True, fmt = ".2f", cmap = "
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_65_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_68_1.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_37_1.png)
@@ -1421,7 +1427,7 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_73_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_76_0.png)
 
 
 
@@ -1454,7 +1460,7 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_76_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_79_0.png)
 
 
 
@@ -1487,7 +1493,7 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_79_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_82_0.png)
 
 
 
