@@ -9,7 +9,9 @@ image: 05_timeseries.png
 
 ## **학습목적**
 시계열 데이터를 다루는 법과 시계열 예측을 하기 위한 여러가지 모델을 사용해보고 특성을 이해한다.<br>
-이를 위해서 데이콘에서 진행 중인 대회인 전력사용량 예측 AI 경진대회의 데이터를 사용하고, 베이스라인 코드를 따라하고 또 나만의 코드로 만들어 결과를 제출하여 순위도 확인해볼 것이다.
+이를 위해서 데이콘에서 진행 중인 대회인 전력사용량 예측 AI 경진대회의 데이터를 사용하고, 베이스라인 코드를 따라하고 또 나만의 코드로 만들어 결과를 제출하여 순위도 확인해볼 것이다.<br>
+
+> 이 장에서는 ARIMA 모형만 다루고 EDA를 다루지 않습니다.
 
 ### **시계열 데이터란?**
 일정 시간 간격으로 배치된 데이터<br>
@@ -40,6 +42,9 @@ import scipy
 import stats
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller, kpss
+
 from sklearn.metrics import mean_absolute_error
 ```
 
@@ -62,6 +67,7 @@ plt.rcParams["figure.figsize"] = (10,10)
 **관련 단어 :**
 - 계절성 : 특정 주기의 패턴을 가짐
 - 주기성 : 특정 패턴을 가지나 일정한 주기를 갖지 않음
+- 추세성 : 장기적으로 변화해가는 흐름
 - 정상성 : 시계열 데이터가 추세나 계절성을 가지고 있지 않은 평균과 분산이 일정하여 시계열의 특징이 관측된 시간에 무관한 성질(주기성은 가질 수 있음) - <u>대부분의 시계열 데이터는 비정상성</u>
 - 차분 : 평균이 일정하지 않은 시계열에 대하여 평균을 일정하게 만드는 작업
     - 일반 차분 : 전 시점의 자료의 차를 구하여 평균을 일정하게 만드는 방법
@@ -129,7 +135,7 @@ plt.plot(ar_process)
 
 
 
-    [<matplotlib.lines.Line2D at 0x28b820036d0>]
+    [<matplotlib.lines.Line2D at 0x2a401522610>]
 
 
 
@@ -154,7 +160,7 @@ plt.plot(ma_process)
 
 
 
-    [<matplotlib.lines.Line2D at 0x28b82045be0>]
+    [<matplotlib.lines.Line2D at 0x2a401565d90>]
 
 
 
@@ -617,11 +623,484 @@ idxs = [1, 2, 3, 4]
 
 
 
-    <ggplot: (174890195110)>
+    <ggplot: (181466153451)>
 
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_23_0.png)
+
+##### **시계열분해**
+
+- 시계열 요소 데이터를 추세-주기, 계절성, 나머지(Error) 세가지로 나누어 보여주는 방식
+
+> 출처 : [https://otexts.com/fppkr/components.html](https://otexts.com/fppkr/components.html) <br>
+
+##### **시계열분해**
+
+- ARIMA 예측을 위해서는 정상성을 만족해야합니다. 이를 위해 정상성 테스트를 하는 두가지 방법을 소개하겠습니다.
+
+
+|TEST NAME|판단 요소|판단 기준|
+|:---:|:---:|:---:|
+|adf|Trend|추세가 제거되면 정상이라고 판단|
+|kpss|Seosonality|계절성이 제거되면 정상이라고 판단|
+
+> 출처 : [https://skyeong.net/285](https://skyeong.net/285) <br>
+> 출처 : [https://sosoeasy.tistory.com/392](https://sosoeasy.tistory.com/392) <br>
+
+
+```python
+def print_adfuller(inputSeries):
+    result = adfuller(inputSeries)
+    print('ADF Statistic: %f' % result[0])
+    print('p-value: %f' % result[1])
+```
+
+
+```python
+def print_kpss(inputSeries):
+    result = kpss(inputSeries)
+    print('KPSS Statistic: %f' % result[0])
+    print('p-value: %f' % result[1])
+```
+
+---
+
+**num이 1번인 건물의 시계열분해를 해보도록 하겠습니다.**
+- Trend는 거의 보이지 않으나, Seosonality는 확연하게 보이는 것으로 보입니다.
+
+- 시간에 대해서 반복(하루 주기)을 하는 것을 확인할 수 있습니다.
+- 트렌드에 대한 테스트인 ADF의 경우 p-value가 0으로 정상성을 띄고 있습니다.
+- 계절성에 대한 테스트인 KPSS의 경우 p-value가 0.01로 0.05보다 작아 정상성을 띄지 않습니다.
+
+
+```python
+decompose_df = train[train.num == 1][["date_time", y_col]].set_index("date_time")
+```
+
+
+```python
+decompse_result = seasonal_decompose(decompose_df[y_col])
+decompse_result.plot()
+plt.show()
+```
+
+
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_34_0.png)
+
+
+
+```python
+print_adfuller(decompose_df)
+```
+
+    ADF Statistic: -5.900664
+    p-value: 0.000000
+    
+
+
+```python
+print_kpss(decompose_df)
+```
+
+    KPSS Statistic: 1.791702
+    p-value: 0.010000
+    
+
+**num이 1번인 건물의 차분을 1로 하여 시계열분해를 해보도록 하겠습니다.**
+- Trend는 거의 보이지 않으나, Seosonality는 역시 확연하게 보이는 것으로 보입니다.
+
+---
+
+- 시간에 대해서 반복(하루 주기)을 하는 것을 확인할 수 있습니다.
+- 트렌드에 대한 테스트인 ADF의 경우 p-value가 0으로 정상성을 띄고 있습니다.
+- 하지만 계절성에 대한 테스트인 KPSS의 경우 p-value가 0.1로 0.05보다 정상성을 띄고 있습니다.
+
+
+```python
+decompose_df_d1 = decompose_df - decompose_df.shift(1)
+decompse_result_d1 = seasonal_decompose(decompose_df_d1[y_col][1:])
+
+decompse_result_d1.plot()
+plt.show()
+```
+
+
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_39_0.png)
+
+
+
+```python
+seosonality_chk = decompse_result_d1.seasonal.reset_index().assign(day = lambda x : x.date_time.dt.day, hour = lambda x : x.date_time.dt.hour).groupby(by = "seasonal").hour.unique()
+seosonality_chk = seosonality_chk.reset_index()
+seosonality_chk.iloc[seosonality_chk.apply(lambda x : x.hour[0], axis = 1).sort_values().index]
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>seasonal</th>
+      <th>hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10</th>
+      <td>-7.484606</td>
+      <td>[0]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-23.279445</td>
+      <td>[1]</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>-8.214249</td>
+      <td>[2]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-15.593606</td>
+      <td>[3]</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>-14.263374</td>
+      <td>[4]</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>-25.089410</td>
+      <td>[5]</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>-8.289303</td>
+      <td>[6]</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>28.361108</td>
+      <td>[7]</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>12.748197</td>
+      <td>[8]</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>41.420590</td>
+      <td>[9]</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>22.865965</td>
+      <td>[10]</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>8.701412</td>
+      <td>[11]</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.666853</td>
+      <td>[12]</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>13.516894</td>
+      <td>[13]</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>22.731447</td>
+      <td>[14]</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>6.116965</td>
+      <td>[15]</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.333501</td>
+      <td>[16]</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>-10.214499</td>
+      <td>[17]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-17.286678</td>
+      <td>[18]</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>1.598751</td>
+      <td>[19]</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>-9.401928</td>
+      <td>[20]</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>-0.015088</td>
+      <td>[21]</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.566055</td>
+      <td>[22]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-20.495553</td>
+      <td>[23]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+print_adfuller(decompose_df_d1[1:])
+```
+
+    ADF Statistic: -8.993809
+    p-value: 0.000000
+    
+
+
+```python
+print_kpss(decompose_df_d1[1:])
+```
+
+    KPSS Statistic: 0.048369
+    p-value: 0.100000
+    
+
+**num이 1번인 건물의 차분을 2로 하여 시계열분해를 해보도록 하겠습니다.**
+- 역시 Trend는 거의 보이지 않으나, Seosonality는 역시 확연하게 보이는 것으로 보입니다.
+
+- 시간에 대해서 반복(하루 주기)을 하는 것을 확인할 수 있습니다.
+- 트렌드에 대한 테스트인 ADF의 경우 p-value가 0으로 정상성을 띄고 있습니다.
+- 계절성에 대한 테스트인 KPSS의 경우 p-value가 0.01로 0.05보다 작아 정상성을 띄지 않습니다.
+
+
+```python
+decompose_df_d2 = decompose_df - (2*decompose_df.shift(1)) - decompose_df.shift(2)
+decompse_result_d2 = seasonal_decompose(decompose_df_d2[y_col][2:])
+decompse_result_d2.plot()
+plt.show()
+```
+
+
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_45_0.png)
+
+
+
+```python
+seosonality_chk = decompse_result_d2.seasonal.reset_index().assign(day = lambda x : x.date_time.dt.day, hour = lambda x : x.date_time.dt.hour).groupby(by = "seasonal").hour.unique()
+seosonality_chk = seosonality_chk.reset_index()
+seosonality_chk.iloc[seosonality_chk.apply(lambda x : x.hour[0], axis = 1).sort_values().index]
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>seasonal</th>
+      <th>hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>9</th>
+      <td>-42.710047</td>
+      <td>[0]</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>-30.546226</td>
+      <td>[1]</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15.261524</td>
+      <td>[2]</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>39.354363</td>
+      <td>[3]</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>64.470953</td>
+      <td>[4]</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>83.480399</td>
+      <td>[5]</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>139.611792</td>
+      <td>[6]</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>209.619417</td>
+      <td>[7]</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>173.913203</td>
+      <td>[8]</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>161.454792</td>
+      <td>[9]</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>88.709881</td>
+      <td>[10]</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>10.237274</td>
+      <td>[11]</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>-28.629335</td>
+      <td>[12]</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>-24.933426</td>
+      <td>[13]</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>-30.400619</td>
+      <td>[14]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-83.284940</td>
+      <td>[15]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-117.938315</td>
+      <td>[16]</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>-134.958280</td>
+      <td>[17]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-132.170958</td>
+      <td>[18]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-85.805851</td>
+      <td>[19]</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>-81.140101</td>
+      <td>[20]</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>-63.971583</td>
+      <td>[21]</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>-53.994922</td>
+      <td>[22]</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>-75.628994</td>
+      <td>[23]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+print_adfuller(decompose_df_d2[2:])
+```
+
+    ADF Statistic: -5.657347
+    p-value: 0.000001
+    
+
+
+```python
+print_kpss(decompose_df_d2[2:])
+```
+
+    KPSS Statistic: 1.779020
+    p-value: 0.010000
+    
 
 ##### **AR, MA의 모수 추정**
 
@@ -663,15 +1142,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_30_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_30_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_30_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_52_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_27_0.png) <br>
@@ -693,15 +1172,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_33_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_33_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_33_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_55_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_29_0.png) <br>
@@ -715,7 +1194,7 @@ plt.show()
 
 
 ```python
-series_d2 = series - (2*series.shift(1)) - series.shift(2)
+series_d2 = series - (2*series.shift(1)) + series.shift(2)
 series_d2.plot()
 plot_acf(series_d2[2:])
 plot_pacf(series_d2[2:])
@@ -723,15 +1202,15 @@ plt.show()
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_36_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_0.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_36_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_1.png)
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_36_2.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_58_2.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_31_0.png) <br>
@@ -764,7 +1243,7 @@ for pdq in tqdm(pdq_list[1:]) :
     pd_lists = pd_lists + [[pdq, aicc, aic, bic, mae]]
 ```
 
-    100%|███████████████████████████████████████████████████| 26/26 [00:08<00:00,  2.99it/s]
+    100%|███████████████████████████████████████████████████| 26/26 [00:07<00:00,  3.32it/s]
     
 
 
@@ -863,7 +1342,7 @@ sns.heatmap(arima_metric.iloc[:, 1:].corr(), annot = True, fmt = ".2f", cmap = "
 
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_43_1.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_65_1.png)
 
 
 ![Oops](../assets/img/2021-06-08-TimeSeries1/2021-06-08-TimeSeries1_37_1.png)
@@ -942,13 +1421,13 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_51_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_73_0.png)
 
 
 
 
 
-    <ggplot: (174890630346)>
+    <ggplot: (181467052150)>
 
 
 
@@ -975,13 +1454,13 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_54_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_76_0.png)
 
 
 
 
 
-    <ggplot: (174890669303)>
+    <ggplot: (181466489182)>
 
 
 
@@ -1008,13 +1487,13 @@ predict.index = val.index
 ```
 
 
-![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_57_0.png)
+![png](2021-06-08-TimeSeries1_files/2021-06-08-TimeSeries1_79_0.png)
 
 
 
 
 
-    <ggplot: (174890941386)>
+    <ggplot: (181466276542)>
 
 
 
@@ -1022,7 +1501,8 @@ predict.index = val.index
 
 ---
 
-- ARIMA의 모델 성능 지표인 AIC와 우리가 최소화시켜야할 MAE가 최소가 되는 점이 다르다는 것과 acf, pacf의 그래프에서 봤던 예상했던 결과와 전혀 다른 결과가 나왔습니다.
+- ARIMA의 모델 성능 지표인 AIC와 우리가 최소화시켜야할 MAE가 최소가 되는 점이 다르다는 것과 정상성 test나 acf, pacf의 그래프에서 봤던 예상했던 결과와 전혀 다른 결과가 나왔습니다.
+    - 좀 더 공부가 부족하여 이런 결과가 나온것은 아닐 지 더 공부를 해보아야겠습니다.
     - 대회가 아닌 실무에서는 무조건 mae가 낮다고 좋은 모델이 아닐 수 있다는 점을 유의하며 모델링을 해나가야겠습니다.
 
 ---
@@ -1031,3 +1511,4 @@ predict.index = val.index
 - https://dacon.io/competitions/official/235736/codeshare/2628?page=1&dtype=recent
 - https://byeongkijeong.github.io/ARIMA-with-Python/
 - https://otexts.com/fppkr/arima-estimation.html
+- https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=gandharva3&logNo=40004397630
