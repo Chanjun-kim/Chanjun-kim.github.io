@@ -1361,7 +1361,7 @@ sns.heatmap(arima_metric.iloc[:, 1:].corr(), annot = True, fmt = ".2f", cmap = "
 
 ```python
 print(arima_metric[arima_metric["aicc"] == arima_metric["aicc"].max()])
-print(arima_metric[arima_metric["aicc"] == arima_metric["aicc"].min()])
+print(arima_metric[arima_metric["aㅅicc"] == arima_metric["aicc"].min()])
 ```
 
              pdq          aicc           aic          bic       mae
@@ -1512,6 +1512,7 @@ predict.index = val.index
     - 대회가 아닌 실무에서는 무조건 mae가 낮다고 좋은 모델이 아닐 수 있다는 점을 유의하며 모델링을 해나가야겠습니다.
 
 ---
+code : https://github.com/Chanjun-kim/Chanjun-kim.github.io/blob/main/_posts/2021-06-08-TimeSeries1.md
 
 참고 자료 : 
 - https://dacon.io/competitions/official/235736/codeshare/2628?page=1&dtype=recent
