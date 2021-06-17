@@ -22,46 +22,6 @@ image: 05_timeseries.png
 일반적으로 이런 방법들은 금융시장에서의 주가 예측 등에서 많이 쓰인다.
 > 출처 : https://ko.wikipedia.org/wiki/%EC%8B%9C%EA%B3%84%EC%97%B4
 
-
-```python
-import os
-import sys
-import warnings
-from tqdm import tqdm
-
-import itertools
-import numpy as np
-import pandas as pd
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import plotnine as p9
-import seaborn as sns
-
-import scipy
-import stats
-from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.stattools import adfuller, kpss
-
-from sklearn.metrics import mean_absolute_error
-```
-
-
-```python
-%matplotlib inline
-warnings.filterwarnings("ignore")
-```
-
-
-```python
-mpl.rcParams['axes.unicode_minus'] = False
-# fm._rebuild()
-plt.rcParams["font.family"] = 'NanumMyeongjo'
-plt.rcParams["figure.figsize"] = (10,10)
-```
-
 ---
 
 **관련 단어 :**
@@ -113,6 +73,46 @@ plt.rcParams["figure.figsize"] = (10,10)
 
 
 ```python
+import os
+import sys
+import warnings
+from tqdm import tqdm
+
+import itertools
+import numpy as np
+import pandas as pd
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import plotnine as p9
+import seaborn as sns
+
+import scipy
+import stats
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller, kpss
+
+from sklearn.metrics import mean_absolute_error
+```
+
+
+```python
+%matplotlib inline
+warnings.filterwarnings("ignore")
+```
+
+
+```python
+mpl.rcParams['axes.unicode_minus'] = False
+# fm._rebuild()
+plt.rcParams["font.family"] = 'NanumMyeongjo'
+plt.rcParams["figure.figsize"] = (10,10)
+```
+
+
+```python
 y = 1
 coff = 0.3
 const = 0
@@ -135,7 +135,7 @@ plt.plot(ar_process)
 
 
 
-    [<matplotlib.lines.Line2D at 0x2a401522610>]
+    [<matplotlib.lines.Line2D at 0x27c015223a0>]
 
 
 
@@ -160,7 +160,7 @@ plt.plot(ma_process)
 
 
 
-    [<matplotlib.lines.Line2D at 0x2a401565d90>]
+    [<matplotlib.lines.Line2D at 0x27c015709d0>]
 
 
 
@@ -623,7 +623,7 @@ idxs = [1, 2, 3, 4]
 
 
 
-    <ggplot: (181466153451)>
+    <ggplot: (170728743361)>
 
 
 
@@ -919,7 +919,7 @@ print_kpss(decompose_df_d1[1:])
 
 
 ```python
-decompose_df_d2 = decompose_df - (2*decompose_df.shift(1)) - decompose_df.shift(2)
+decompose_df_d2 = decompose_df - (2*decompose_df.shift(1)) + decompose_df.shift(2)
 decompse_result_d2 = seasonal_decompose(decompose_df_d2[y_col][2:])
 decompse_result_d2.plot()
 plt.show()
@@ -965,123 +965,123 @@ seosonality_chk.iloc[seosonality_chk.apply(lambda x : x.hour[0], axis = 1).sort_
   </thead>
   <tbody>
     <tr>
-      <th>9</th>
-      <td>-42.710047</td>
+      <th>18</th>
+      <td>13.001128</td>
       <td>[0]</td>
     </tr>
     <tr>
-      <th>10</th>
-      <td>-30.546226</td>
+      <th>3</th>
+      <td>-15.804657</td>
       <td>[1]</td>
     </tr>
     <tr>
-      <th>15</th>
-      <td>15.261524</td>
+      <th>19</th>
+      <td>15.055378</td>
       <td>[2]</td>
     </tr>
     <tr>
-      <th>16</th>
-      <td>39.354363</td>
+      <th>10</th>
+      <td>-7.389175</td>
       <td>[3]</td>
     </tr>
     <tr>
-      <th>17</th>
-      <td>64.470953</td>
+      <th>14</th>
+      <td>1.320414</td>
       <td>[4]</td>
     </tr>
     <tr>
-      <th>18</th>
-      <td>83.480399</td>
+      <th>7</th>
+      <td>-10.835854</td>
       <td>[5]</td>
     </tr>
     <tr>
       <th>20</th>
-      <td>139.611792</td>
+      <td>16.790289</td>
       <td>[6]</td>
     </tr>
     <tr>
       <th>23</th>
-      <td>209.619417</td>
+      <td>36.640593</td>
       <td>[7]</td>
     </tr>
     <tr>
-      <th>22</th>
-      <td>173.913203</td>
+      <th>4</th>
+      <td>-15.622729</td>
       <td>[8]</td>
     </tr>
     <tr>
-      <th>21</th>
-      <td>161.454792</td>
+      <th>22</th>
+      <td>28.662575</td>
       <td>[9]</td>
     </tr>
     <tr>
-      <th>19</th>
-      <td>88.709881</td>
+      <th>1</th>
+      <td>-18.564443</td>
       <td>[10]</td>
     </tr>
     <tr>
-      <th>14</th>
-      <td>10.237274</td>
+      <th>5</th>
+      <td>-14.174372</td>
       <td>[11]</td>
     </tr>
     <tr>
-      <th>12</th>
-      <td>-28.629335</td>
+      <th>9</th>
+      <td>-7.681234</td>
       <td>[12]</td>
     </tr>
     <tr>
-      <th>13</th>
-      <td>-24.933426</td>
+      <th>17</th>
+      <td>12.712712</td>
       <td>[13]</td>
     </tr>
     <tr>
-      <th>11</th>
-      <td>-30.400619</td>
+      <th>15</th>
+      <td>9.204736</td>
       <td>[14]</td>
     </tr>
     <tr>
-      <th>4</th>
-      <td>-83.284940</td>
+      <th>2</th>
+      <td>-16.624300</td>
       <td>[15]</td>
     </tr>
     <tr>
-      <th>2</th>
-      <td>-117.938315</td>
+      <th>12</th>
+      <td>-5.793282</td>
       <td>[16]</td>
     </tr>
     <tr>
-      <th>0</th>
-      <td>-134.958280</td>
+      <th>8</th>
+      <td>-10.557818</td>
       <td>[17]</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>-132.170958</td>
+      <th>11</th>
+      <td>-7.081997</td>
       <td>[18]</td>
     </tr>
     <tr>
-      <th>3</th>
-      <td>-85.805851</td>
+      <th>21</th>
+      <td>18.875611</td>
       <td>[19]</td>
     </tr>
     <tr>
-      <th>5</th>
-      <td>-81.140101</td>
+      <th>6</th>
+      <td>-11.010497</td>
       <td>[20]</td>
     </tr>
     <tr>
-      <th>7</th>
-      <td>-63.971583</td>
+      <th>16</th>
+      <td>9.377021</td>
       <td>[21]</td>
     </tr>
     <tr>
-      <th>8</th>
-      <td>-53.994922</td>
+      <th>13</th>
+      <td>0.571325</td>
       <td>[22]</td>
     </tr>
     <tr>
-      <th>6</th>
-      <td>-75.628994</td>
+      <th>0</th>
+      <td>-21.071425</td>
       <td>[23]</td>
     </tr>
   </tbody>
@@ -1095,8 +1095,8 @@ seosonality_chk.iloc[seosonality_chk.apply(lambda x : x.hour[0], axis = 1).sort_
 print_adfuller(decompose_df_d2[2:])
 ```
 
-    ADF Statistic: -5.657347
-    p-value: 0.000001
+    ADF Statistic: -25.306054
+    p-value: 0.000000
     
 
 
@@ -1104,8 +1104,8 @@ print_adfuller(decompose_df_d2[2:])
 print_kpss(decompose_df_d2[2:])
 ```
 
-    KPSS Statistic: 1.779020
-    p-value: 0.010000
+    KPSS Statistic: 0.012631
+    p-value: 0.100000
     
 
 ##### **AR, MA의 모수 추정**
@@ -1249,7 +1249,7 @@ for pdq in tqdm(pdq_list[1:]) :
     pd_lists = pd_lists + [[pdq, aicc, aic, bic, mae]]
 ```
 
-    100%|███████████████████████████████████████████████████| 26/26 [00:07<00:00,  3.32it/s]
+    100%|███████████████████████████████████████████████████| 26/26 [00:08<00:00,  3.11it/s]
     
 
 
@@ -1433,7 +1433,7 @@ predict.index = val.index
 
 
 
-    <ggplot: (181467052150)>
+    <ggplot: (170731823863)>
 
 
 
@@ -1466,7 +1466,7 @@ predict.index = val.index
 
 
 
-    <ggplot: (181466489182)>
+    <ggplot: (170730380746)>
 
 
 
@@ -1499,7 +1499,7 @@ predict.index = val.index
 
 
 
-    <ggplot: (181466276542)>
+    <ggplot: (170728889266)>
 
 
 
