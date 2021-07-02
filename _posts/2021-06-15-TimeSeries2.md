@@ -416,6 +416,7 @@ oh_encoder = OneHotEncoder()
 - EPOCH : 30
 - LSTM LAYER : 1
 - LSTM UNIT : 32
+- LENGTH : 24
 
 
 ```python
@@ -713,6 +714,7 @@ predict_grp_idx(grp_val, mae_max, y_col)
 - EPOCH : 30
 - LSTM LAYER : 1
 - LSTM UNIT : 32
+- LENGTH : 24
 
 
 ```python
@@ -907,6 +909,7 @@ predict_grp_idx(grp_val, mae_max, y_col)
 - EPOCH : 100
 - LSTM LAYER : 1
 - LSTM UNIT : 32
+- LENGTH : 24
 
 
 ```python
@@ -1264,7 +1267,8 @@ predict_grp_idx(grp_val, mae_max, y_col)
 - LOSS FUNCTION : MSE
 - EPOCH : 100
 - LSTM LAYER : 6
-- LSTM UNIT : 64
+- LSTM UNIT : 
+- LENGTH : 24
 
 
 ```python
@@ -1639,6 +1643,7 @@ predict_grp_idx(grp_val, mae_max, y_col)
 - EPOCH : 100
 - LSTM LAYER : 6
 - LSTM UNIT : 64
+- LEGNTH : 24
 - 데이터 추가
 
 
@@ -2074,9 +2079,787 @@ predict_grp_idx(grp_val, mae_max, y_col)
 
 ---
 
-결론 : 
+### **여섯번째 모델**
+- LOSS FUNCTION : MSE
+- EPOCH : 100
+- LSTM LAYER : 1
+- LSTM UNIT : 32
+- LENGTH : 24 * 7 (일주일)
+
+
+```python
+EPOCH=100
+length = 24 * 7
+```
+
+
+```python
+tf_train = pd.concat([
+    train["num"].reset_index(drop = True),
+    pd.DataFrame(oh_encoder.fit_transform(train[["num"]]).toarray()).add_prefix("num"), 
+    train[[y_col]].reset_index(drop = True)], 
+    axis = 1)
+```
+
+
+```python
+tf_val = pd.concat([
+    val["num"].reset_index(drop = True),
+    pd.DataFrame(oh_encoder.transform(val[["num"]]).toarray()).add_prefix("num"), 
+    val[y_col].reset_index(drop = True)], 
+    axis = 1)
+```
+
+
+```python
+minmax_value = tf_train.groupby("num").agg({y_col : [max, min]}).reset_index().droplevel(axis = 1, level = 0)
+minmax_value.columns = ["num", "max", "min"]
+```
+
+
+```python
+tf_train[y_col] = tf_train.groupby("num").apply(lambda x : (x[y_col]-min(x[y_col]))/(max(x[y_col])-min(x[y_col]))).values
+```
+
+
+```python
+tf_val = fit_minmmax_scaler(tf_val, minmax_value)
+```
+
+
+```python
+save_best_only=tf.keras.callbacks.ModelCheckpoint(filepath="h5/lstm_model.h5", monitor='val_loss', save_best_only=True)
+early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20)
+```
+
+
+```python
+trainX, trainY = make_data(data = tf_train, y_col = y_col, length = length)
+```
+
+    60it [03:14,  3.24s/it]
+    
+
+
+```python
+valX, valY = make_data(data = tf_val, y_col = y_col, length = length)
+```
+
+    60it [00:04, 14.80it/s]
+    
+
+
+```python
+print(trainX.shape)
+print(trainY.shape)
+```
+
+    (97920, 168, 61)
+    (97920, 1)
+    
+
+
+```python
+print(valX.shape)
+print(valY.shape)
+```
+
+    (4320, 168, 61)
+    (4320, 1)
+    
+
+
+```python
+model=Sequential([
+    LSTM(lstm_units, return_sequences=False, recurrent_dropout=dropout),
+    Dense(1, kernel_initializer=tf.initializers.zeros())
+])
+```
+
+
+```python
+model.compile(optimizer='adam', loss='mae', metrics=['mse'])
+```
+
+
+```python
+%%time
+history = model.fit(trainX, trainY, validation_data = (valX, valY), 
+                    epochs=EPOCH, batch_size=BATCH_SIZE, verbose=1,
+                    callbacks=[early_stop, save_best_only])
+```
+
+    Epoch 1/100
+    765/765 [==============================] - 66s 81ms/step - loss: 0.1019 - mse: 0.0252 - val_loss: 0.0517 - val_mse: 0.0069
+    Epoch 2/100
+    765/765 [==============================] - 61s 79ms/step - loss: 0.0504 - mse: 0.0059 - val_loss: 0.0443 - val_mse: 0.0054
+    Epoch 3/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0445 - mse: 0.0049 - val_loss: 0.0417 - val_mse: 0.0050
+    Epoch 4/100
+    765/765 [==============================] - 61s 80ms/step - loss: 0.0414 - mse: 0.0045 - val_loss: 0.0402 - val_mse: 0.0045
+    Epoch 5/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0396 - mse: 0.0042 - val_loss: 0.0388 - val_mse: 0.0044
+    Epoch 6/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0383 - mse: 0.0041 - val_loss: 0.0381 - val_mse: 0.0042
+    Epoch 7/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0375 - mse: 0.0039 - val_loss: 0.0386 - val_mse: 0.0041
+    Epoch 8/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0368 - mse: 0.0038 - val_loss: 0.0376 - val_mse: 0.0041
+    Epoch 9/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0362 - mse: 0.0037 - val_loss: 0.0373 - val_mse: 0.0040
+    Epoch 10/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0358 - mse: 0.0036 - val_loss: 0.0383 - val_mse: 0.0040
+    Epoch 11/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0353 - mse: 0.0036 - val_loss: 0.0377 - val_mse: 0.0039
+    Epoch 12/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0350 - mse: 0.0035 - val_loss: 0.0370 - val_mse: 0.0039
+    Epoch 13/100
+    765/765 [==============================] - 58s 75ms/step - loss: 0.0346 - mse: 0.0035 - val_loss: 0.0367 - val_mse: 0.0039
+    Epoch 14/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0343 - mse: 0.0034 - val_loss: 0.0372 - val_mse: 0.0040
+    Epoch 15/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0341 - mse: 0.0034 - val_loss: 0.0369 - val_mse: 0.0039
+    Epoch 16/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0339 - mse: 0.0033 - val_loss: 0.0366 - val_mse: 0.0038
+    Epoch 17/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0336 - mse: 0.0033 - val_loss: 0.0359 - val_mse: 0.0038
+    Epoch 18/100
+    765/765 [==============================] - 58s 75ms/step - loss: 0.0335 - mse: 0.0033 - val_loss: 0.0368 - val_mse: 0.0038
+    Epoch 19/100
+    765/765 [==============================] - 58s 75ms/step - loss: 0.0333 - mse: 0.0032 - val_loss: 0.0367 - val_mse: 0.0038
+    Epoch 20/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0330 - mse: 0.0032 - val_loss: 0.0356 - val_mse: 0.0037
+    Epoch 21/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0329 - mse: 0.0031 - val_loss: 0.0356 - val_mse: 0.0037
+    Epoch 22/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0326 - mse: 0.0031 - val_loss: 0.0367 - val_mse: 0.0038
+    Epoch 23/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0326 - mse: 0.0031 - val_loss: 0.0351 - val_mse: 0.0036
+    Epoch 24/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0324 - mse: 0.0030 - val_loss: 0.0359 - val_mse: 0.0037
+    Epoch 25/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0322 - mse: 0.0030 - val_loss: 0.0348 - val_mse: 0.0036
+    Epoch 26/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0320 - mse: 0.0030 - val_loss: 0.0352 - val_mse: 0.0035
+    Epoch 27/100
+    765/765 [==============================] - 58s 76ms/step - loss: 0.0320 - mse: 0.0030 - val_loss: 0.0346 - val_mse: 0.0035
+    Epoch 28/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0318 - mse: 0.0029 - val_loss: 0.0355 - val_mse: 0.0037
+    Epoch 29/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0317 - mse: 0.0029 - val_loss: 0.0351 - val_mse: 0.0036
+    Epoch 30/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0317 - mse: 0.0029 - val_loss: 0.0350 - val_mse: 0.0035
+    Epoch 31/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0316 - mse: 0.0029 - val_loss: 0.0354 - val_mse: 0.0036
+    Epoch 32/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0314 - mse: 0.0029 - val_loss: 0.0356 - val_mse: 0.0035
+    Epoch 33/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0313 - mse: 0.0029 - val_loss: 0.0352 - val_mse: 0.0035
+    Epoch 34/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0312 - mse: 0.0028 - val_loss: 0.0346 - val_mse: 0.0035
+    Epoch 35/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0310 - mse: 0.0028 - val_loss: 0.0343 - val_mse: 0.0035
+    Epoch 36/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0311 - mse: 0.0028 - val_loss: 0.0352 - val_mse: 0.0036
+    Epoch 37/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0310 - mse: 0.0028 - val_loss: 0.0342 - val_mse: 0.0034
+    Epoch 38/100
+    765/765 [==============================] - 59s 77ms/step - loss: 0.0309 - mse: 0.0028 - val_loss: 0.0349 - val_mse: 0.0035
+    Epoch 39/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0309 - mse: 0.0028 - val_loss: 0.0345 - val_mse: 0.0034
+    Epoch 40/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0307 - mse: 0.0028 - val_loss: 0.0342 - val_mse: 0.0034
+    Epoch 41/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0307 - mse: 0.0028 - val_loss: 0.0355 - val_mse: 0.0035
+    Epoch 42/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0305 - mse: 0.0027 - val_loss: 0.0340 - val_mse: 0.0034
+    Epoch 43/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0304 - mse: 0.0027 - val_loss: 0.0343 - val_mse: 0.0034
+    Epoch 44/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0304 - mse: 0.0027 - val_loss: 0.0342 - val_mse: 0.0034
+    Epoch 45/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0304 - mse: 0.0027 - val_loss: 0.0342 - val_mse: 0.0034
+    Epoch 46/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0303 - mse: 0.0027 - val_loss: 0.0350 - val_mse: 0.0035
+    Epoch 47/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0306 - mse: 0.0028 - val_loss: 0.0346 - val_mse: 0.0035
+    Epoch 48/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0306 - mse: 0.0028 - val_loss: 0.0348 - val_mse: 0.0035
+    Epoch 49/100
+    765/765 [==============================] - 61s 80ms/step - loss: 0.0302 - mse: 0.0027 - val_loss: 0.0346 - val_mse: 0.0035
+    Epoch 50/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0300 - mse: 0.0027 - val_loss: 0.0347 - val_mse: 0.0034
+    Epoch 51/100
+    765/765 [==============================] - 61s 80ms/step - loss: 0.0299 - mse: 0.0026 - val_loss: 0.0344 - val_mse: 0.0034
+    Epoch 52/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0300 - mse: 0.0027 - val_loss: 0.0353 - val_mse: 0.0037
+    Epoch 53/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0298 - mse: 0.0026 - val_loss: 0.0337 - val_mse: 0.0033
+    Epoch 54/100
+    765/765 [==============================] - 59s 78ms/step - loss: 0.0297 - mse: 0.0026 - val_loss: 0.0344 - val_mse: 0.0034
+    Epoch 55/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0298 - mse: 0.0026 - val_loss: 0.0341 - val_mse: 0.0034
+    Epoch 56/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0297 - mse: 0.0026 - val_loss: 0.0339 - val_mse: 0.0033
+    Epoch 57/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0299 - mse: 0.0027 - val_loss: 0.0343 - val_mse: 0.0034
+    Epoch 58/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0296 - mse: 0.0026 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 59/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0297 - mse: 0.0026 - val_loss: 0.0346 - val_mse: 0.0034
+    Epoch 60/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0300 - mse: 0.0027 - val_loss: 0.0346 - val_mse: 0.0034
+    Epoch 61/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0295 - mse: 0.0026 - val_loss: 0.0344 - val_mse: 0.0034
+    Epoch 62/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0295 - mse: 0.0026 - val_loss: 0.0338 - val_mse: 0.0033
+    Epoch 63/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0296 - mse: 0.0026 - val_loss: 0.0340 - val_mse: 0.0033
+    Epoch 64/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0296 - mse: 0.0026 - val_loss: 0.0340 - val_mse: 0.0034
+    Epoch 65/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0294 - mse: 0.0025 - val_loss: 0.0343 - val_mse: 0.0033
+    Epoch 66/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0294 - mse: 0.0025 - val_loss: 0.0337 - val_mse: 0.0032
+    Epoch 67/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0293 - mse: 0.0025 - val_loss: 0.0337 - val_mse: 0.0033
+    Epoch 68/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0295 - mse: 0.0026 - val_loss: 0.0343 - val_mse: 0.0034
+    Epoch 69/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0292 - mse: 0.0025 - val_loss: 0.0345 - val_mse: 0.0034
+    Epoch 70/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0291 - mse: 0.0025 - val_loss: 0.0339 - val_mse: 0.0034
+    Epoch 71/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0291 - mse: 0.0025 - val_loss: 0.0338 - val_mse: 0.0033
+    Epoch 72/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0291 - mse: 0.0025 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 73/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0339 - val_mse: 0.0033
+    Epoch 74/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0292 - mse: 0.0025 - val_loss: 0.0341 - val_mse: 0.0034
+    Epoch 75/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0292 - mse: 0.0025 - val_loss: 0.0335 - val_mse: 0.0034
+    Epoch 76/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0341 - val_mse: 0.0035
+    Epoch 77/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0289 - mse: 0.0025 - val_loss: 0.0332 - val_mse: 0.0033
+    Epoch 78/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0287 - mse: 0.0024 - val_loss: 0.0345 - val_mse: 0.0035
+    Epoch 79/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0337 - val_mse: 0.0033
+    Epoch 80/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0288 - mse: 0.0024 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 81/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0287 - mse: 0.0025 - val_loss: 0.0339 - val_mse: 0.0033
+    Epoch 82/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0295 - mse: 0.0026 - val_loss: 0.0339 - val_mse: 0.0033
+    Epoch 83/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0292 - mse: 0.0025 - val_loss: 0.0336 - val_mse: 0.0032
+    Epoch 84/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0289 - mse: 0.0025 - val_loss: 0.0335 - val_mse: 0.0033
+    Epoch 85/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0291 - mse: 0.0025 - val_loss: 0.0350 - val_mse: 0.0035
+    Epoch 86/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 87/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0341 - val_mse: 0.0034
+    Epoch 88/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0287 - mse: 0.0024 - val_loss: 0.0334 - val_mse: 0.0032
+    Epoch 89/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0293 - mse: 0.0025 - val_loss: 0.0373 - val_mse: 0.0038
+    Epoch 90/100
+    765/765 [==============================] - 61s 79ms/step - loss: 0.0291 - mse: 0.0025 - val_loss: 0.0333 - val_mse: 0.0032
+    Epoch 91/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0285 - mse: 0.0024 - val_loss: 0.0335 - val_mse: 0.0032
+    Epoch 92/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0287 - mse: 0.0024 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 93/100
+    765/765 [==============================] - 61s 79ms/step - loss: 0.0288 - mse: 0.0025 - val_loss: 0.0340 - val_mse: 0.0034
+    Epoch 94/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0286 - mse: 0.0024 - val_loss: 0.0332 - val_mse: 0.0033
+    Epoch 95/100
+    765/765 [==============================] - 60s 79ms/step - loss: 0.0328 - mse: 0.0032 - val_loss: 0.0381 - val_mse: 0.0043
+    Epoch 96/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0303 - mse: 0.0027 - val_loss: 0.0343 - val_mse: 0.0034
+    Epoch 97/100
+    765/765 [==============================] - 60s 78ms/step - loss: 0.0290 - mse: 0.0025 - val_loss: 0.0334 - val_mse: 0.0033
+    Wall time: 1h 36min 25s
+    
+
+
+```python
+history_plot(history)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_142_0.png)
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_142_0.png)
+
+
+```python
+%time result = return_predict(tf_train, tf_val, val, 24)
+```
+
+    100%|███████████████████████████████████████████████████| 60/60 [10:44<00:00, 10.74s/it]
+
+    Wall time: 10min 44s
+    
+
+    
+    
+
+
+```python
+grp_val = pd.concat([result, tf_val[y_col]], axis = 1)
+```
+
+
+```python
+print(mean_absolute_error(grp_val.predict, grp_val[y_col]))
+metric_plot(grp_val)
+```
+
+    0.3211827858864578
+    
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_146_1.png)
+
+
+
+
+
+    <ggplot: (100421514981)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_146_1.png)
+
+
+```python
+mae_min = grp_val.groupby("num").apply(lambda x : mean_absolute_error(x["predict"], x[y_col])).idxmin()
+mae_max = grp_val.groupby("num").apply(lambda x : mean_absolute_error(x["predict"], x[y_col])).idxmax()
+print(f"mae가 가장 낮은 건물은 {mae_min}번 건물이고 mae가 가장 높은 건물은 {mae_max}번 건물입니다.")
+```
+
+    mae가 가장 낮은 건물은 3번 건물이고 mae가 가장 높은 건물은 33번 건물입니다.
+    
+
+
+```python
+predict_grp_idx(grp_val, mae_min, y_col)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_149_0.png)
+
+
+
+
+
+    <ggplot: (100422345045)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_149_0.png)
+
+
+```python
+predict_grp_idx(grp_val, mae_max, y_col)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_151_0.png)
+
+
+
+
+
+    <ggplot: (100421532883)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_151_0.png)
+
+
+```python
+model.summary()
+```
+
+    Model: "sequential_2"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    lstm_2 (LSTM)                (None, 32)                12032     
+    _________________________________________________________________
+    dense_2 (Dense)              (None, 1)                 33        
+    =================================================================
+    Total params: 12,065
+    Trainable params: 12,065
+    Non-trainable params: 0
+    _________________________________________________________________
+    
+
+#### **여섯번째 모델 평가**
+- LOSS를 보면 잘 수렴하다가 중간에 한번 커진 것을 확인할 수 있습니다.
+- MAE를 보나 Validation set을 보나 무조건 길다고 잘 Fitting되는 것은 아닌 것 같습니다.(물론 다른 Hyper parameter 들을 조절하는 것이 관건이겠지만...)
+
+---
+
+### **일곱번째 모델**
+- LOSS FUNCTION : MSE
+- EPOCH : 100
+- LSTM LAYER : 6
+- LSTM UNIT : 32
+- LENGTH : 24 * 7 (일주일)
+- 데이터 추가
+
+
+```python
+model=Sequential([
+    LSTM(lstm_units, return_sequences=True, recurrent_dropout=dropout),
+    LSTM(int(lstm_units / 2), return_sequences=True, recurrent_dropout=dropout),
+    LSTM(int(lstm_units / 2**2), return_sequences=True, recurrent_dropout=dropout),
+    LSTM(int(lstm_units / 2**3), return_sequences=True, recurrent_dropout=dropout),
+    LSTM(int(lstm_units / 2**4), return_sequences=True, recurrent_dropout=dropout),
+    LSTM(int(lstm_units / 2**5), return_sequences=False, recurrent_dropout=dropout),
+    Dense(1, kernel_initializer=tf.initializers.zeros())
+])
+```
+
+
+```python
+model.compile(optimizer='adam', loss='mae', metrics=['mse'])
+```
+
+
+```python
+%%time
+history = model.fit(trainX, trainY, validation_data = (valX, valY), 
+                    epochs=EPOCH, batch_size=BATCH_SIZE, verbose=1,
+                    callbacks=[early_stop, save_best_only])
+```
+
+    Epoch 1/100
+    765/765 [==============================] - 297s 375ms/step - loss: 0.2577 - mse: 0.0984 - val_loss: 0.2497 - val_mse: 0.0862
+    Epoch 2/100
+    765/765 [==============================] - 293s 383ms/step - loss: 0.1851 - mse: 0.0548 - val_loss: 0.1536 - val_mse: 0.0487
+    Epoch 3/100
+    765/765 [==============================] - 294s 385ms/step - loss: 0.1058 - mse: 0.0232 - val_loss: 0.1429 - val_mse: 0.0456
+    Epoch 4/100
+    765/765 [==============================] - 277s 363ms/step - loss: 0.0953 - mse: 0.0193 - val_loss: 0.1278 - val_mse: 0.0353
+    Epoch 5/100
+    765/765 [==============================] - 271s 354ms/step - loss: 0.0864 - mse: 0.0159 - val_loss: 0.1139 - val_mse: 0.0286
+    Epoch 6/100
+    765/765 [==============================] - 282s 368ms/step - loss: 0.0773 - mse: 0.0128 - val_loss: 0.1082 - val_mse: 0.0246
+    Epoch 7/100
+    765/765 [==============================] - 298s 390ms/step - loss: 0.0708 - mse: 0.0108 - val_loss: 0.0955 - val_mse: 0.0203
+    Epoch 8/100
+    765/765 [==============================] - 287s 375ms/step - loss: 0.0665 - mse: 0.0096 - val_loss: 0.0889 - val_mse: 0.0170
+    Epoch 9/100
+    765/765 [==============================] - 280s 366ms/step - loss: 0.0636 - mse: 0.0087 - val_loss: 0.0842 - val_mse: 0.0159
+    Epoch 10/100
+    765/765 [==============================] - 282s 368ms/step - loss: 0.0609 - mse: 0.0080 - val_loss: 0.0808 - val_mse: 0.0146
+    Epoch 11/100
+    765/765 [==============================] - 285s 373ms/step - loss: 0.0590 - mse: 0.0075 - val_loss: 0.0757 - val_mse: 0.0129
+    Epoch 12/100
+    765/765 [==============================] - 288s 377ms/step - loss: 0.0567 - mse: 0.0070 - val_loss: 0.0729 - val_mse: 0.0118
+    Epoch 13/100
+    765/765 [==============================] - 297s 388ms/step - loss: 0.0548 - mse: 0.0066 - val_loss: 0.0721 - val_mse: 0.0120
+    Epoch 14/100
+    765/765 [==============================] - 289s 378ms/step - loss: 0.0569 - mse: 0.0075 - val_loss: 0.0896 - val_mse: 0.0215
+    Epoch 15/100
+    765/765 [==============================] - 284s 372ms/step - loss: 0.0559 - mse: 0.0073 - val_loss: 0.0681 - val_mse: 0.0118
+    Epoch 16/100
+    765/765 [==============================] - 284s 372ms/step - loss: 0.0510 - mse: 0.0059 - val_loss: 0.0610 - val_mse: 0.0087
+    Epoch 17/100
+    765/765 [==============================] - 285s 373ms/step - loss: 0.0482 - mse: 0.0053 - val_loss: 0.0580 - val_mse: 0.0078
+    Epoch 18/100
+    765/765 [==============================] - 300s 392ms/step - loss: 0.0459 - mse: 0.0048 - val_loss: 0.0528 - val_mse: 0.0068
+    Epoch 19/100
+    765/765 [==============================] - 286s 373ms/step - loss: 0.0437 - mse: 0.0043 - val_loss: 0.0495 - val_mse: 0.0057
+    Epoch 20/100
+    765/765 [==============================] - 288s 376ms/step - loss: 0.0431 - mse: 0.0042 - val_loss: 0.0461 - val_mse: 0.0052
+    Epoch 21/100
+    765/765 [==============================] - 283s 370ms/step - loss: 0.0449 - mse: 0.0046 - val_loss: 0.0464 - val_mse: 0.0054
+    Epoch 22/100
+    765/765 [==============================] - 282s 369ms/step - loss: 0.0405 - mse: 0.0038 - val_loss: 0.0444 - val_mse: 0.0048
+    Epoch 23/100
+    765/765 [==============================] - 290s 379ms/step - loss: 0.0390 - mse: 0.0036 - val_loss: 0.0421 - val_mse: 0.0045
+    Epoch 24/100
+    765/765 [==============================] - 288s 377ms/step - loss: 0.0378 - mse: 0.0034 - val_loss: 0.0432 - val_mse: 0.0046
+    Epoch 25/100
+    765/765 [==============================] - 284s 372ms/step - loss: 0.0369 - mse: 0.0033 - val_loss: 0.0419 - val_mse: 0.0044
+    Epoch 26/100
+    765/765 [==============================] - 276s 361ms/step - loss: 0.0364 - mse: 0.0032 - val_loss: 0.0418 - val_mse: 0.0045
+    Epoch 27/100
+    765/765 [==============================] - 276s 360ms/step - loss: 0.0354 - mse: 0.0031 - val_loss: 0.0405 - val_mse: 0.0041
+    Epoch 28/100
+    765/765 [==============================] - 282s 368ms/step - loss: 0.0347 - mse: 0.0030 - val_loss: 0.0387 - val_mse: 0.0038
+    Epoch 29/100
+    765/765 [==============================] - 280s 366ms/step - loss: 0.0340 - mse: 0.0029 - val_loss: 0.0386 - val_mse: 0.0039
+    Epoch 30/100
+    765/765 [==============================] - 277s 362ms/step - loss: 0.0336 - mse: 0.0029 - val_loss: 0.0381 - val_mse: 0.0038
+    Epoch 31/100
+    765/765 [==============================] - 279s 365ms/step - loss: 0.0333 - mse: 0.0028 - val_loss: 0.0392 - val_mse: 0.0039
+    Epoch 32/100
+    765/765 [==============================] - 279s 365ms/step - loss: 0.0329 - mse: 0.0028 - val_loss: 0.0368 - val_mse: 0.0036
+    Epoch 33/100
+    765/765 [==============================] - 282s 369ms/step - loss: 0.0324 - mse: 0.0027 - val_loss: 0.0370 - val_mse: 0.0036
+    Epoch 34/100
+    765/765 [==============================] - 282s 369ms/step - loss: 0.0319 - mse: 0.0026 - val_loss: 0.0357 - val_mse: 0.0035
+    Epoch 35/100
+    765/765 [==============================] - 283s 370ms/step - loss: 0.0316 - mse: 0.0026 - val_loss: 0.0349 - val_mse: 0.0033
+    Epoch 36/100
+    765/765 [==============================] - 284s 371ms/step - loss: 0.0314 - mse: 0.0026 - val_loss: 0.0353 - val_mse: 0.0035
+    Epoch 37/100
+    765/765 [==============================] - 284s 372ms/step - loss: 0.0328 - mse: 0.0029 - val_loss: 0.0357 - val_mse: 0.0035
+    Epoch 38/100
+    765/765 [==============================] - 285s 373ms/step - loss: 0.0311 - mse: 0.0026 - val_loss: 0.0357 - val_mse: 0.0035
+    Epoch 39/100
+    765/765 [==============================] - 288s 377ms/step - loss: 0.0307 - mse: 0.0026 - val_loss: 0.0346 - val_mse: 0.0033
+    Epoch 40/100
+    765/765 [==============================] - 298s 389ms/step - loss: 0.0306 - mse: 0.0025 - val_loss: 0.0361 - val_mse: 0.0035
+    Epoch 41/100
+    765/765 [==============================] - 307s 401ms/step - loss: 0.0303 - mse: 0.0025 - val_loss: 0.0356 - val_mse: 0.0035
+    Epoch 42/100
+    765/765 [==============================] - 309s 404ms/step - loss: 0.0301 - mse: 0.0025 - val_loss: 0.0358 - val_mse: 0.0035
+    Epoch 43/100
+    765/765 [==============================] - 301s 394ms/step - loss: 0.0299 - mse: 0.0024 - val_loss: 0.0350 - val_mse: 0.0035
+    Epoch 44/100
+    765/765 [==============================] - 293s 383ms/step - loss: 0.0296 - mse: 0.0024 - val_loss: 0.0337 - val_mse: 0.0031
+    Epoch 45/100
+    765/765 [==============================] - 305s 399ms/step - loss: 0.0295 - mse: 0.0024 - val_loss: 0.0338 - val_mse: 0.0033
+    Epoch 46/100
+    765/765 [==============================] - 323s 423ms/step - loss: 0.0294 - mse: 0.0024 - val_loss: 0.0335 - val_mse: 0.0032
+    Epoch 47/100
+    765/765 [==============================] - 329s 430ms/step - loss: 0.0292 - mse: 0.0024 - val_loss: 0.0333 - val_mse: 0.0031
+    Epoch 48/100
+    765/765 [==============================] - 334s 436ms/step - loss: 0.0290 - mse: 0.0023 - val_loss: 0.0339 - val_mse: 0.0032
+    Epoch 49/100
+    765/765 [==============================] - 315s 411ms/step - loss: 0.0289 - mse: 0.0023 - val_loss: 0.0341 - val_mse: 0.0032
+    Epoch 50/100
+    765/765 [==============================] - 310s 406ms/step - loss: 0.0296 - mse: 0.0024 - val_loss: 0.0337 - val_mse: 0.0032
+    Epoch 51/100
+    765/765 [==============================] - 336s 440ms/step - loss: 0.0293 - mse: 0.0024 - val_loss: 0.0342 - val_mse: 0.0034
+    Epoch 52/100
+    765/765 [==============================] - 315s 411ms/step - loss: 0.0291 - mse: 0.0024 - val_loss: 0.0332 - val_mse: 0.0032
+    Epoch 53/100
+    765/765 [==============================] - 317s 415ms/step - loss: 0.0289 - mse: 0.0023 - val_loss: 0.0338 - val_mse: 0.0033
+    Epoch 54/100
+    765/765 [==============================] - 313s 409ms/step - loss: 0.0287 - mse: 0.0023 - val_loss: 0.0339 - val_mse: 0.0032
+    Epoch 55/100
+    765/765 [==============================] - 334s 436ms/step - loss: 0.0285 - mse: 0.0023 - val_loss: 0.0328 - val_mse: 0.0031
+    Epoch 56/100
+    765/765 [==============================] - 330s 431ms/step - loss: 0.0283 - mse: 0.0023 - val_loss: 0.0331 - val_mse: 0.0032
+    Epoch 57/100
+    765/765 [==============================] - 319s 417ms/step - loss: 0.0303 - mse: 0.0025 - val_loss: 0.0399 - val_mse: 0.0045
+    Epoch 58/100
+    765/765 [==============================] - 320s 419ms/step - loss: 0.0307 - mse: 0.0026 - val_loss: 0.0346 - val_mse: 0.0034
+    Epoch 59/100
+    765/765 [==============================] - 344s 450ms/step - loss: 0.0290 - mse: 0.0024 - val_loss: 0.0331 - val_mse: 0.0032
+    Epoch 60/100
+    765/765 [==============================] - 341s 446ms/step - loss: 0.0286 - mse: 0.0023 - val_loss: 0.0336 - val_mse: 0.0033
+    Epoch 61/100
+    765/765 [==============================] - 340s 444ms/step - loss: 0.0285 - mse: 0.0023 - val_loss: 0.0335 - val_mse: 0.0033
+    Epoch 62/100
+    765/765 [==============================] - 350s 457ms/step - loss: 0.0283 - mse: 0.0023 - val_loss: 0.0340 - val_mse: 0.0034
+    Epoch 63/100
+    765/765 [==============================] - 354s 463ms/step - loss: 0.0282 - mse: 0.0023 - val_loss: 0.0337 - val_mse: 0.0033
+    Epoch 64/100
+    765/765 [==============================] - 348s 455ms/step - loss: 0.0282 - mse: 0.0023 - val_loss: 0.0332 - val_mse: 0.0032
+    Epoch 65/100
+    765/765 [==============================] - 353s 462ms/step - loss: 0.0279 - mse: 0.0022 - val_loss: 0.0332 - val_mse: 0.0033
+    Epoch 66/100
+    765/765 [==============================] - 349s 456ms/step - loss: 0.0278 - mse: 0.0022 - val_loss: 0.0324 - val_mse: 0.0031
+    Epoch 67/100
+    765/765 [==============================] - 367s 480ms/step - loss: 0.0277 - mse: 0.0022 - val_loss: 0.0355 - val_mse: 0.0037
+    Epoch 68/100
+    765/765 [==============================] - 369s 483ms/step - loss: 0.0287 - mse: 0.0024 - val_loss: 0.0385 - val_mse: 0.0040
+    Epoch 69/100
+    765/765 [==============================] - 374s 489ms/step - loss: 0.0294 - mse: 0.0025 - val_loss: 0.0337 - val_mse: 0.0032
+    Epoch 70/100
+    765/765 [==============================] - 359s 469ms/step - loss: 0.0279 - mse: 0.0022 - val_loss: 0.0319 - val_mse: 0.0029
+    Epoch 71/100
+    765/765 [==============================] - 362s 474ms/step - loss: 0.0276 - mse: 0.0022 - val_loss: 0.0327 - val_mse: 0.0031
+    Epoch 72/100
+    765/765 [==============================] - 371s 485ms/step - loss: 0.0273 - mse: 0.0021 - val_loss: 0.0320 - val_mse: 0.0030
+    Epoch 73/100
+    765/765 [==============================] - 365s 477ms/step - loss: 0.0276 - mse: 0.0022 - val_loss: 0.0331 - val_mse: 0.0032
+    Epoch 74/100
+    765/765 [==============================] - 358s 469ms/step - loss: 0.0275 - mse: 0.0022 - val_loss: 0.0325 - val_mse: 0.0031
+    Epoch 75/100
+    765/765 [==============================] - 356s 466ms/step - loss: 0.0282 - mse: 0.0023 - val_loss: 0.0349 - val_mse: 0.0035
+    Epoch 76/100
+    765/765 [==============================] - 377s 493ms/step - loss: 0.0281 - mse: 0.0023 - val_loss: 0.0329 - val_mse: 0.0031
+    Epoch 77/100
+    765/765 [==============================] - 377s 493ms/step - loss: 0.0278 - mse: 0.0023 - val_loss: 0.0331 - val_mse: 0.0032
+    Epoch 78/100
+    765/765 [==============================] - 382s 499ms/step - loss: 0.0277 - mse: 0.0022 - val_loss: 0.0331 - val_mse: 0.0033
+    Epoch 79/100
+    765/765 [==============================] - 375s 490ms/step - loss: 0.0275 - mse: 0.0022 - val_loss: 0.0335 - val_mse: 0.0032
+    Epoch 80/100
+    765/765 [==============================] - 382s 499ms/step - loss: 0.0279 - mse: 0.0023 - val_loss: 0.0330 - val_mse: 0.0032
+    Epoch 81/100
+    765/765 [==============================] - 396s 518ms/step - loss: 0.0273 - mse: 0.0022 - val_loss: 0.0329 - val_mse: 0.0032
+    Epoch 82/100
+    765/765 [==============================] - 366s 478ms/step - loss: 0.0272 - mse: 0.0022 - val_loss: 0.0329 - val_mse: 0.0033
+    Epoch 83/100
+    765/765 [==============================] - 371s 484ms/step - loss: 0.0271 - mse: 0.0022 - val_loss: 0.0329 - val_mse: 0.0033
+    Epoch 84/100
+    765/765 [==============================] - 378s 494ms/step - loss: 0.0270 - mse: 0.0021 - val_loss: 0.0329 - val_mse: 0.0033
+    Epoch 85/100
+    765/765 [==============================] - 372s 487ms/step - loss: 0.0268 - mse: 0.0021 - val_loss: 0.0329 - val_mse: 0.0032
+    Epoch 86/100
+    765/765 [==============================] - 360s 470ms/step - loss: 0.0267 - mse: 0.0021 - val_loss: 0.0334 - val_mse: 0.0032
+    Epoch 87/100
+    765/765 [==============================] - 397s 519ms/step - loss: 0.0266 - mse: 0.0021 - val_loss: 0.0328 - val_mse: 0.0032
+    Epoch 88/100
+    765/765 [==============================] - 357s 466ms/step - loss: 0.0266 - mse: 0.0021 - val_loss: 0.0323 - val_mse: 0.0031
+    Epoch 89/100
+    765/765 [==============================] - 356s 465ms/step - loss: 0.0265 - mse: 0.0021 - val_loss: 0.0328 - val_mse: 0.0032
+    Epoch 90/100
+    765/765 [==============================] - 356s 465ms/step - loss: 0.0271 - mse: 0.0021 - val_loss: 0.0328 - val_mse: 0.0032
+    Wall time: 8h 2s
+    
+
+
+```python
+history_plot(history)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_159_0.png)
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_159_0.png)
+
+
+```python
+%time result = return_predict(tf_train, tf_val, val, 24)
+```
+
+    100%|███████████████████████████████████████████████████| 60/60 [10:59<00:00, 11.00s/it]
+
+    Wall time: 10min 59s
+    
+
+    
+    
+
+
+```python
+grp_val = pd.concat([result, tf_val[y_col]], axis = 1)
+```
+
+
+```python
+print(mean_absolute_error(grp_val.predict, grp_val[y_col]))
+metric_plot(grp_val)
+```
+
+    0.31780043886528764
+    
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_163_1.png)
+
+
+
+
+
+    <ggplot: (100438488929)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_163_1.png)
+
+
+```python
+mae_min = grp_val.groupby("num").apply(lambda x : mean_absolute_error(x["predict"], x[y_col])).idxmin()
+mae_max = grp_val.groupby("num").apply(lambda x : mean_absolute_error(x["predict"], x[y_col])).idxmax()
+print(f"mae가 가장 낮은 건물은 {mae_min}번 건물이고 mae가 가장 높은 건물은 {mae_max}번 건물입니다.")
+```
+
+    mae가 가장 낮은 건물은 31번 건물이고 mae가 가장 높은 건물은 11번 건물입니다.
+    
+
+
+```python
+predict_grp_idx(grp_val, mae_min, y_col)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_166_0.png)
+
+
+
+
+
+    <ggplot: (100408766474)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_166_0.png)
+
+
+```python
+predict_grp_idx(grp_val, mae_max, y_col)
+```
+
+
+![png](2021-06-15-TimeSeries2_files/2021-06-15-TimeSeries2_168_0.png)
+
+
+
+
+
+    <ggplot: (100408874469)>
+
+
+
+![Oops](../assets/img/2021-06-15-TimeSeries2/2021-06-15-TimeSeries2_168_0.png)
+
+
+```python
+model.summary()
+```
+
+    Model: "sequential_1"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    lstm_1 (LSTM)                (None, None, 32)          12032     
+    _________________________________________________________________
+    lstm_2 (LSTM)                (None, None, 16)          3136      
+    _________________________________________________________________
+    lstm_3 (LSTM)                (None, None, 8)           800       
+    _________________________________________________________________
+    lstm_4 (LSTM)                (None, None, 4)           208       
+    _________________________________________________________________
+    lstm_5 (LSTM)                (None, None, 2)           56        
+    _________________________________________________________________
+    lstm_6 (LSTM)                (None, 1)                 16        
+    _________________________________________________________________
+    dense_1 (Dense)              (None, 1)                 2         
+    =================================================================
+    Total params: 16,250
+    Trainable params: 16,250
+    Non-trainable params: 0
+    _________________________________________________________________
+    
+
+#### **일곱번째 모델 평가**
+- 데이터를 추가하니 MAE는 이전 모델보다 조금 떨어진 것을 볼 수 있습니다.
+- 하지만 MAE가 가장 작은 건물은 Under Fitting이 된 것으로 보이고 MAE가 가장 높은 건물은 초반에 잘 예측하다가 후반부에 정반대의 양상을 보입니다.
+
+---
+
+#### **결론 :** 
 - 시계열 데이터들은 패턴들을 따라가기 때문에 이상 패턴에 대해서 잘 적용되지 않을수도 있다는 생각이 들었고, 꼭 LSTM이 ARIMA보다 무조건 좋을 것 같다는 생각은 안 듭니다.
-- LOSS FUNCTION을 mae, mse 두가지로 사용해보았는데, 이 것에 대해서도 정리를 해서 올리도록 하겠습니다.
+- 그리고 LSTM의 데이터를 넣을 때 무조건 많이 넣는 것이 자원 상이나 시간, 정확도 모든 측면에서 비효율적일 수 있다는 생각을 가지고 EDA를 통하여 적절한 데이터와 길이를 지정하는 것이 중요할 것 같습니다.
 
 ---
 
