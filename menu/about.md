@@ -23,8 +23,14 @@ title:  "Chanjun's 포트폴리오"
 
 ---
 
+* **나만의 장점** <br>
+    1. 머신러닝 / 딥러닝에 대한 최신 기술에 대한 도전 정신과 빠른 습득과 적용 능력
+    2. Python, R, SQL의 각각의 장점을 알고 장점에 따라 자유자재로 구현 가능
+    3. ML Engineer를 목표로 끊임없는 자기계발 
+    4. 어디에서 누구와도 잘 어울리고 사람들을 잘 화합시키는 능력
+
 --- 
-* Skill
+* **Skill**
     * Python : *<u>상</u>*
         * pandas와 geopandas 등을 통한 정형/공간 데이터 전처리 및 EDA
         * tensorflow, sklearn, xgboost 등을 활용한 머신러닝/딥러닝 모델링
