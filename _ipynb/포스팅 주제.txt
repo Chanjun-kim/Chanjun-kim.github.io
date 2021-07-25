@@ -1,0 +1,8 @@
+1. Augmentation
+2. transfer learning
+3. segmentation
+4. AE
+5. BN, DropOut
+6. Cross entropy
+7. Global Average Pooling
+8. transpse2D, upsampling
