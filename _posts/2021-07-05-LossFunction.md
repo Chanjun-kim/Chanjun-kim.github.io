@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Loss function이란 무엇일까?"
+title: "Loss function For Regression"
 author: "Chanjun Kim"
 categories: Data분석
 tags: [Data, Lossfunction, 손실함수, 목적함수, 비용함수, 머신러닝, 딥러닝, ML, DeepLearning]
@@ -123,7 +123,7 @@ reg_data = pd.DataFrame({"x" : np.reshape(reg_data[0], (1, -1))[0], "y" : np.res
 
 
 
-![Oops](2021-07-05-LossFunction_11_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_11_0.png)
 
 
 ```python
@@ -158,7 +158,7 @@ val_noise3["predict_mae"] = gb_mae.predict(val_noise3[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_14_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_14_0.png)
 
 
 ```python
@@ -188,7 +188,7 @@ val_noise3["predict_mse"] = gb_mse.predict(val_noise3[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_16_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_16_0.png)
 
 
 ```python
@@ -241,7 +241,7 @@ reg_data = pd.DataFrame({"x" : np.reshape(reg_data[0], (1, -1))[0], "y" : np.res
 
 
 
-![Oops](2021-07-05-LossFunction_22_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_19_0.png)
 
 
 ```python
@@ -276,7 +276,7 @@ val_noise30["predict_mae"] = mod_mae.predict(val_noise30[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_25_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_25_0.png)
 
 
 ```python
@@ -306,7 +306,7 @@ val_noise30["predict_mse"] = mod_mse.predict(val_noise30[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_27_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_27_0.png)
 
 
 ```python
@@ -386,7 +386,7 @@ reg_data["y"] = reg_data["y"] + reg_data["outlier"]
 
 
 
-![Oops](2021-07-05-LossFunction_35_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_29_0.png)
 
 
 ```python
@@ -421,7 +421,7 @@ val_noise_add["predict_mae"] = gb_mae.predict(val_noise_add[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_38_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_38_0.png)
 
 
 ```python
@@ -451,7 +451,7 @@ val_noise_add["predict_mse"] = gb_mse.predict(val_noise_add[["x"]])
 
 
 
-![Oops](2021-07-05-LossFunction_39_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_39_0.png)
 
 
 ```python
@@ -603,7 +603,7 @@ for i in range(5) :
 
 
 
-![Oops](2021-07-05-LossFunction_43_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_52_0.png)
 
 
 ```python
@@ -663,7 +663,7 @@ result["q"] = result["predict_variable"].str.replace("q", "").astype(float)
 
 
 
-![Oops](2021-07-05-LossFunction_49_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_59_0.png)
 
 
 ```python
@@ -705,7 +705,7 @@ reg_data["y"] = [x[1] + (( -1 if random.random() > 0.5 else 1) * (20 * x[0] * x[
 
 
 
-![Oops](2021-07-05-LossFunction_53_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_63_0.png)
 
 
 ```python
@@ -729,7 +729,7 @@ reg_data["y"] = [x[1] + (( -1 if random.random() > 0.5 else 1) * (20 * x[0] * x[
 
 
 
-![Oops](2021-07-05-LossFunction_54_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_66_0.png)
 
 
 ```python
@@ -793,7 +793,7 @@ result["q"] = result["predict_variable"].str.replace("q", "").astype(float)
 
 
 
-![Oops](2021-07-05-LossFunction_60_0.png)
+![Oops](../assets/img/2021-07-05-LossFunction/2021-07-05-LossFunction_72_0.png)
 
 ---
 
