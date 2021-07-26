@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Loss function For Regression"
+title: "Loss function For Regression Model"
 author: "Chanjun Kim"
 categories: Data분석
 tags: [Data, Lossfunction, 손실함수, 목적함수, 비용함수, 머신러닝, 딥러닝, ML, DeepLearning]
