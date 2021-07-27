@@ -866,7 +866,7 @@ print(f"데이터의 표준편차 : {reg_std} - 모든 값을 평균으로 예�
 
 ---
 
-code : https://github.com/Chanjun-kim/Chanjun-kim.github.io/blob/main/_ipynb/2021-07-05-LossFunction.ipynb
+code : https://github.com/Chanjun-kim/Chanjun-kim.github.io/blob/main/_ipynb/2021-07-05-LossFunction1.ipynb
 
 > 참고자료 : [https://brunch.co.kr/@tristanmhhd/14](https://brunch.co.kr/@tristanmhhd/14)<br>
 > 참고자료 : [https://steadiness-193.tistory.com/277](https://steadiness-193.tistory.com/277)
