@@ -674,6 +674,8 @@ plt.show()
 ![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_28_0.png)
 
 
+![Oops](../assets/img/2021-07-25-AE1_AutoEncoder/2021-07-25-AE1_AutoEncoder_26_0.png)
+
 
 ```python
 # 비슷한 좌표 생성
@@ -703,7 +705,7 @@ latent_convex["label"] = latent_convex["label"].astype(str)
 ```
 
 
-![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_32_0.png)
+![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_33_0.png)
 
 
 
@@ -733,7 +735,7 @@ plt.show()
 ```
 
 
-![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_34_0.png)
+![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_35_0.png)
 
 
 ![Oops](../assets/img/2021-07-25-AE1_AutoEncoder/2021-07-25-AE1_AutoEncoder_31_0.png)
@@ -763,7 +765,7 @@ random_points["label"] = [f"random{i}" for i in range(10)]
 ```
 
 
-![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_38_0.png)
+![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_39_0.png)
 
 
 
@@ -793,7 +795,7 @@ plt.show()
 ```
 
 
-![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_40_0.png)
+![png](2021-07-25-AE1_AutoEncoder_files/2021-07-25-AE1_AutoEncoder_41_0.png)
 
 
 ![Oops](../assets/img/2021-07-25-AE1_AutoEncoder/2021-07-25-AE1_AutoEncoder_35_0.png)
