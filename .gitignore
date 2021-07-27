@@ -29,6 +29,10 @@ _ipynb/data/kfood/*
 _ipynb/data/kfood/
 _ipynb/data/kfood
 
+_ipynb/data/archive/*
+_ipynb/data/archive/
+_ipynb/data/archive
+
 _ipynb/model_png
 _ipynb/model_png/*
 _ipynb/model_png/
