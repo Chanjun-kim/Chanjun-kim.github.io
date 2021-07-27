@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Loss function이란 무엇일까?"
+title: "Loss function for Regression Model"
 author: "Chanjun Kim"
 categories: Data분석
 tags: [Data, Lossfunction, 손실함수, 목적함수, 비용함수, 머신러닝, 딥러닝, ML, DeepLearning]
@@ -838,10 +838,10 @@ print(f"데이터의 표준편차 : {reg_std} - 모든 값을 평균으로 예�
 
 ---
 
-code : https://github.com/Chanjun-kim/Chanjun-kim.github.io/blob/main/_ipynb/2021-07-05-LossFunction.ipynb
+code : https://github.com/Chanjun-kim/Chanjun-kim.github.io/blob/main/_ipynb/2021-07-05-LossFunction1.ipynb
 
 > 참고자료 : [https://brunch.co.kr/@tristanmhhd/14](https://brunch.co.kr/@tristanmhhd/14)<br>
-> 참고자료 : [https://steadiness-193.tistory.com/277](https://steadiness-193.tistory.com/277)
-> 참고자료 : [https://m.blog.naver.com/tlrror9496/222055889079](https://m.blog.naver.com/tlrror9496/222055889079)
-> 참고자료 : [https://medium.com/@Aaron__Kim/%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80%EC%9D%98-%EA%B2%B0%EC%A0%95%EA%B3%84%EC%88%98-linear-regression-r-squared-determination-coefficient-a66e4a32a9d6](https://medium.com/@Aaron__Kim/%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80%EC%9D%98-%EA%B2%B0%EC%A0%95%EA%B3%84%EC%88%98-linear-regression-r-squared-determination-coefficient-a66e4a32a9d6)
-> 참고자료 : [https://go-hard.tistory.com/125](https://go-hard.tistory.com/125)
+> 참고자료 : [https://steadiness-193.tistory.com/277](https://steadiness-193.tistory.com/277)<br>
+> 참고자료 : [https://m.blog.naver.com/tlrror9496/222055889079](https://m.blog.naver.com/tlrror9496/222055889079)<br>
+> 참고자료 : [https://medium.com/@Aaron__Kim/%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80%EC%9D%98-%EA%B2%B0%EC%A0%95%EA%B3%84%EC%88%98-linear-regression-r-squared-determination-coefficient-a66e4a32a9d6](https://medium.com/@Aaron__Kim/%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80%EC%9D%98-%EA%B2%B0%EC%A0%95%EA%B3%84%EC%88%98-linear-regression-r-squared-determination-coefficient-a66e4a32a9d6)<br>
+> 참고자료 : [https://go-hard.tistory.com/125](https://go-hard.tistory.com/125)<br>
