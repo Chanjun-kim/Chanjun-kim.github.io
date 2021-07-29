@@ -20,6 +20,11 @@ _posts/*files
 _posts/*files/
 _posts/*files/*
 
+_ipynb/data/*
+_ipynb/data
+_ipynb/data/
+_ipynb/data/*.csv
+
 _ipynb/data/dacon/*
 _ipynb/data/dacon/
 _ipynb/data/dacon
