@@ -43,10 +43,7 @@ title:  "Chanjun's 포트폴리오"
         * 통계/머신러닝 모델링
     * SQL : *<u>상</u>*
         * HIVE, IMPALA 등 RDBMS에서 빅데이터 데이터 전처리
-    * Java : *<u>중</u>*
-        * 스프링을 활용한 웹 프로그래밍
-    * Java Script : *<u>중</u>*
-        * JQuery 등을 활용한 기초 문법 및 활용 가능
+        
 
 ---
 
