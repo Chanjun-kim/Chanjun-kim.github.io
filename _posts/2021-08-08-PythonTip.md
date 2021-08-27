@@ -3,8 +3,8 @@ layout: post
 title: "데이터 분석가가 Python에서 한번씩 보지만 궁금하지 않았던 것들"
 author: "Chanjun Kim"
 categories: Data분석
-tags: [Python, tip, ellipsis, underbar, Asterisk, decorator, magickey, jupyter, f string]
-image: 08_AutoEncoder.png
+tags: [Python, tip, underbar, Asterisk, decorator, magickey, jupyter, f string]
+image: 09_Python.png
 ---
 
 ## **학습목적**
