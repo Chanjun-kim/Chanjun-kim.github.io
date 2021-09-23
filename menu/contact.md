@@ -3,8 +3,10 @@ layout: page
 title: Contact
 ---
 
-Update the `menu/contact.md` file to change your Contact page.
-
+<br/>
 Phone : 010-8947-3803
+<br/>
 Mail : nice3803@naver.com
-Git hub : https://github.com/Chanjun-kim
+<br/>
+Github : https://github.com/Chanjun-kim
+<br/>
