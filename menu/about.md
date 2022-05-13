@@ -44,7 +44,11 @@ title:  "Chanjun's 포트폴리오"
         * ggplot, leaflet 등을 활용한 시각화
         * 통계/머신러닝 모델링
     * SQL : *<u>상</u>*
-        * Bigquery, HIVE, IMPALA 등 빅데이터 데이터 전처리
+        * HIVE, IMPALA 등 RDBMS에서 빅데이터 데이터 전처리
+    * Cloud : 
+        * GCP VertexAI를 통한 분석 환경 구축 및 머신러닝/딥러닝 학습 환경 및 모델 서빙
+        * Composer/Airflow를 통한 스케쥴러 자동화
+        * Trigger를 활용하여 Cloud Function을 이용한 작업
         
 
 ---
